@@ -11,3 +11,4 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     open-in-view: false
+  liquibase: classpath:liquibase/changelog-master.yml

@@ -1,12 +1,11 @@
 package ms28.az.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import ms28.az.dto.StudentDto;
 import ms28.az.model.Student;
 import ms28.az.repository.StudentRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +43,20 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
+    @PostConstruct
+    public void fly() {
+        var student = studentRepository.findByNameAndAgeBefore("Ragib", 24).get();
+        System.out.println("Student:ID" + student.getId());
+    }
+
+    @PostConstruct
+    public void fly1() {
+
+        var id = studentRepository.findIdByAndName("Ragib");
+        System.out.println("Student:ID" + id);
+    }
+
+
     @Override
     public StudentDto getById(Long id) {
         var student = studentRepository.findById(id)
@@ -52,5 +65,5 @@ public class StudentServiceImpl implements StudentService {
     }
 
 
-    }
+}
 
