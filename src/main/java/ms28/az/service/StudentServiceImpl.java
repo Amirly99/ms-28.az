@@ -42,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.deleteById(id);
 
     }
-
+/*
     @PostConstruct
     public void fly() {
         var student = studentRepository.findByNameAndAgeBefore("Ragib", 24).get();
@@ -55,6 +55,8 @@ public class StudentServiceImpl implements StudentService {
         var id = studentRepository.findIdByAndName("Ragib");
         System.out.println("Student:ID" + id);
     }
+
+ */
 
 
     @Override
