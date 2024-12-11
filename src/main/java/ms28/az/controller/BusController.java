@@ -44,7 +44,7 @@ public class BusController {
         return busService.getBus(id);
     }
 
-    @GetMapping(value = "/bus")
+    @GetMapping(value = "/busy")
     public List<BusDto> getAll() {
         return busService.getAll();
 
