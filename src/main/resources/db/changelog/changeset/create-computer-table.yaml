@@ -24,7 +24,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: data
+                  name: date
                   type: timestamp
                   defaultValue: now()
                   constraints:

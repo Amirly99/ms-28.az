@@ -1,4 +1,4 @@
-package az.ingress.controller.model;
+package az.ingress.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
