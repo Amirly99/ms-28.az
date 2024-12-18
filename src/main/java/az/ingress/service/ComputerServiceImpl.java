@@ -99,7 +99,7 @@ public class ComputerServiceImpl implements ComputerService {
             System.out.println("Computer Id:" + comp.getId());
         }
 
-     */
+
     @PostConstruct
     public void fly() {
 
@@ -121,5 +121,7 @@ public class ComputerServiceImpl implements ComputerService {
         var id2 = computerRepository.findByAmount(new BigDecimal(60));
         System.out.println("Computer:" + id2);
     }
+
+     */
 
 }

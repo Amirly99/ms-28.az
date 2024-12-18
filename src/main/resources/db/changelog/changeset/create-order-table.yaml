@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order
+      author: Ragib
+      changes:
+        - createTable:
+            tableName: order
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_amount
+                  type: numeric(16,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+                  defaultValue: now()
+                  constraints:
+                    nullable: false
+
+
+          remarks:  Table to store information about posts
