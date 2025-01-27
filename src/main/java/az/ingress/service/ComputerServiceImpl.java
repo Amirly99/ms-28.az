@@ -2,55 +2,59 @@ package az.ingress.service;
 
 import az.ingress.dto.ComputerDto;
 import az.ingress.entity.ComputerEntity;
-import az.ingress.entity.OrderEntity;
+import az.ingress.exception.NotFoundException;
 import az.ingress.model.Computer;
-import az.ingress.model.ComputerResponse;
+import az.ingress.model.criteria.ComputerCriteria;
+import az.ingress.model.criteria.PageCriteria;
+import az.ingress.response.ComputerResponse;
 import az.ingress.model.ComputerStatus;
 import az.ingress.repository.ComputerRepository;
-import az.ingress.repository.OrderRepository;
+import az.ingress.repository.OrderDetailRepository;
+import az.ingress.response.PageableResponse;
+import az.ingress.specification.ComputerSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static az.ingress.exception.ExceptionConstants.COMPUTER_NOT_FOUND_CODE;
+import static az.ingress.exception.ExceptionConstants.COMPUTER_NOT_FOUND_MESSAGE;
+import static az.ingress.mapper.PageableMapper.PAGEABLE_MAPPER;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ComputerServiceImpl implements ComputerService {
     private final ComputerRepository computerRepository;
-    private final OrderRepository orderRepository;
-    private OrderService orderService;
-@Transactional
+    private final OrderDetailRepository orderDetailRepository;
+    private OrderDetailService orderDetailService;
+   private final ComputerCriteria computerCriteria;
+
+    //@Transactional
     @Override
     public void create(Computer computer) {
-    computerRepository.save(ComputerEntity.builder()
-            .computerMark(computer.getComputerMark())
-            .amount(computer.getAmount())
-            .date(LocalDate.now())
-            .status(ComputerStatus.MACHINE)
+        log.info("ActionLog.create.start computer: {}", computer);
+        computerRepository.save(ComputerEntity.builder()
+                .computerMark(computer.getComputerMark())
+                .amount(computer.getAmount())
+                .date(LocalDate.now())
+                .status(ComputerStatus.MACHINE)
 
-            .build());
-    orderService.testing5();//Burada biz ayi bean uzre method qurub order_det table-e sorgu gonderib sorgunu save edirk
-    //roolBack olunmayacaq cunki testing5(); methodunda extecption qeyd etmemisik ;
-    //+Biz testing5();methodunda new Transactional qeyd etmiyimiz ucun burada computer table sorgumuz save olunmaycaq amaa
-    //order-det table-e save olunacaq eger default Transactional qeyd etseydik o zaman her iki sorgumuz roolBack olunacaqgdi;
+                .build());
+        log.info("ActionLog.create.end computer: {}", computer);
+        // orderDetailService.testing5();//Burada biz ayi bean uzre method qurub order_det table-e sorgu gonderib sorgunu save edirk
+        //roolBack olunmayacaq cunki testing5(); methodunda extecption qeyd etmemisik ;
+        //+Biz testing5();methodunda new Transactional qeyd etmiyimiz ucun burada computer table sorgumuz save olunmaycaq amaa
+        //order-det table-e save olunacaq eger default Transactional qeyd etseydik o zaman her iki sorgumuz roolBack olunacaqgdi;
 
-throw new RuntimeException("Not cannot ");
-
-
-
-
+//throw new RuntimeException("Not cannot ");
 
 
-
-
-
-
-      // testing4(computer);
-      //  testing2();
+        // testing4(computer);
+        //  testing2();
         // testing();
 /*
         try {
@@ -76,7 +80,7 @@ throw new RuntimeException("Not cannot ");
 
     public void testing1() throws Exception {//Transactional-a checked exception verdiyimiz zaman kodumuz roolback olumayacaq sorgularim save olunacaq;;
 
-        throw  new Exception("Not cannot");
+        throw new Exception("Not cannot");
     }
 
 
@@ -84,7 +88,7 @@ throw new RuntimeException("Not cannot ");
 //Elave etsek bele yene create methodunda olan bir default Transactional ile ise dusecek cunki bir bean ile ferqli iki Transactional
 //Islenmir;
     public void testing2() {
-        orderRepository.save((OrderEntity.builder()
+        orderDetailRepository.save((OrderDetailEntity.builder()
                 .orderName("PhoneOrder")
                 .orderAmount(new BigDecimal(55))
                 .date(LocalDate.now())
@@ -98,8 +102,8 @@ throw new RuntimeException("Not cannot ");
 
      */
 
-   // @Transactional
-   // private void testing3(){}//@Transactional private methodlarda ise dusmur ;
+    // @Transactional
+    // private void testing3(){}//@Transactional private methodlarda ise dusmur ;
     //Transactional ozu Proxy pater uzerinde qurulub ve isleyir;
     //Proxy @ annotation dedikde biz @Transactional esas nezerde tuta bilerik ;
 
@@ -117,35 +121,6 @@ throw new RuntimeException("Not cannot ");
     }
 
     */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -175,13 +150,39 @@ throw new RuntimeException("Not cannot ");
 
     }
 
-    @Override
+    // @Override
+    // @Cacheable("computer") //Cache edirik ;//Proxy DP esasinda isleyir;
     public ComputerResponse getById(Long id) {
-
+        log.info("ActionLog.getById.start:{}", id);
         var comp = fetchOrderIfExist(id);
 
-        return new ComputerResponse(comp.getComputerMark(), comp.getAmount(), comp.getDate());
+        var comp1 = new ComputerResponse(comp.getComputerMark(), comp.getAmount(), comp.getDate());
+        log.info("ActionLog.getById.end:{}", id);
+        return comp1;
+    }
 
+    // @CachePut(value = "computer") //Cache vasitesile soruglarimizi update bu sekilde edirik;
+    @Override
+    public ComputerResponse updateCache(Long id) {
+       return getById(id);}
+
+    // @CacheEvict(value = "computer",allEntries = true)//Bu sekilde cache silirik ;
+     @Override
+    public void deleteCache() {
+
+    }
+
+    @Override
+    public PageableResponse getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria) {
+        var pageRequest= PageRequest.of(pageCriteria.getPage(), pageCriteria.getCount());
+        var specification=new ComputerSpecification(computerCriteria);
+        var computersPage=computerRepository.findAll(specification,pageRequest);
+
+        return PAGEABLE_MAPPER.buildPageableResponse(computersPage.getContent(),
+                computersPage.getNumber(),
+                computersPage.getTotalElements(),
+                computersPage.hasNext(),
+                computersPage.getTotalPages());
     }
 
     @Override
@@ -203,11 +204,16 @@ throw new RuntimeException("Not cannot ");
     }
 
     private ComputerEntity fetchOrderIfExist(Long id) {
-        return computerRepository.findByIdAndStatusNot(id, ComputerStatus.RUNNING).
-                orElseThrow(() -> new RuntimeException("Not cannot"));
+        return computerRepository.findByIdAndStatusNot(id, ComputerStatus.RUNNING)
 
+                .orElseThrow(() -> {
+                    log.error("ActionLog.fetchOrderIfExist.error post with id:{} not found", id);
+                    return new NotFoundException(
+                            String.format(COMPUTER_NOT_FOUND_MESSAGE, id), COMPUTER_NOT_FOUND_CODE);
+
+
+                });
     }
-
     /*
         @PostConstruct
         public void test() {

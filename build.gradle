@@ -1,11 +1,40 @@
-plugins {
-    id "java"
-    id "org.springframework.boot" version "$springBootVersion"
-    id "io.spring.dependency-management" version "$dependencyManagementVersion"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.hibernate:hibernate-gradle-plugin:5.6.4.Final"
+    }
 }
 
-group = "az.ingress"
-sourceCompatibility = "17"
+
+
+
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+//    id 'org.hibernate.orm' version '5.6.4.Final'
+}
+
+
+
+
+
+apply plugin: 'org.hibernate.orm'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
 
 configurations {
     compileOnly {
@@ -13,9 +42,7 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
-}
+
 
 dependencies {
     //spring
@@ -25,6 +52,7 @@ dependencies {
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
     implementation 'org.liquibase:liquibase-core'
+   // implementation 'org.hibernate:hibernate-core:6.2.6.Final'
     runtimeOnly 'org.postgresql:postgresql'
 
     //testing
@@ -32,8 +60,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'net.javacrumbs.shedlock:shedlock-spring:5.3.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.3.0'
+
 }
 
 test {
     useJUnitPlatform()
 }
+
+ //hibernate {
+
+    //enhance{
+//enableLazyInitialization = true
+   // }
+//}
+
+
+

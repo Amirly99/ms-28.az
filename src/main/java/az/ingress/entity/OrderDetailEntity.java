@@ -1,10 +1,6 @@
 package az.ingress.entity;
 
-import az.ingress.model.ComputerStatus;
-
 import lombok.*;
-import lombok.experimental.FieldNameConstants;
-
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,21 +10,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Table(name = "computer")
 @Entity
+@Table(name = "order_det")
 @Builder
-@FieldNameConstants
-
-public class ComputerEntity {
-
-
+public class OrderDetailEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String computerMark;
-    private BigDecimal amount;
+    private String orderName;
+    private BigDecimal orderAmount;
     private LocalDate date;
-    @Enumerated(value = EnumType.STRING)
-    private ComputerStatus status;
 }
-

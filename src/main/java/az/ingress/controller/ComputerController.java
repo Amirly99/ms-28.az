@@ -2,7 +2,10 @@ package az.ingress.controller;
 
 import az.ingress.dto.ComputerDto;
 import az.ingress.model.Computer;
-import az.ingress.model.ComputerResponse;
+import az.ingress.model.criteria.ComputerCriteria;
+import az.ingress.model.criteria.PageCriteria;
+import az.ingress.response.ComputerResponse;
+import az.ingress.response.PageableResponse;
 import az.ingress.service.ComputerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +32,9 @@ public class ComputerController {
     public void update(@RequestBody Computer computer, @PathVariable Long id) {
 
         computerService.update(computer, id);
-    }@PutMapping(value = "/{id}/all")
+    }
+
+    @PutMapping(value = "/{id}/all")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void updateAll(@RequestBody ComputerDto computerDto, @PathVariable Long id) {
 
@@ -56,4 +61,22 @@ public class ComputerController {
 
     }
 
+    @DeleteMapping(value = "/cache")
+    // @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCache() {
+        computerService.deleteCache();
+
+    }
+
+    @PutMapping(value = "/cache")
+    public ComputerResponse updateCache(@RequestParam Long id) {
+        return computerService.updateCache(id);
+    }
+
+    @GetMapping
+    public PageableResponse getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria) {
+
+        return computerService.getComputer(computerCriteria, pageCriteria);
+    }
 }
+
