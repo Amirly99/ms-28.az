@@ -1,6 +1,6 @@
 package az.ingress.dto;
 
-import az.ingress.model.ComputerStatus;
+import az.ingress.model.enums.ComputerStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

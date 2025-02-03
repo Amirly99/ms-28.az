@@ -1,8 +1,6 @@
 package az.ingress.util;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -25,14 +23,12 @@ public class PredicateUtil {
     public <T> PredicateUtil addNullSafety(T value, Function<T, Predicate> predicateFunction) {//Musteri isdeyine gore filter olunan zaman bu methodan istifade olunur;
         if (value != null) {
             predicates.add(predicateFunction.apply(value));
-        } else {
-        throw new IllegalArgumentException("Object cannot be null when using add method.");
-    }
+        }
 
         return this;
     }
 
-    public List<Predicate> build() {
-        return predicates;
+    public Predicate[] build() {
+        return predicates.toArray(new Predicate[0]); // Bu, Predicate array qaytaracaq
     }
 }

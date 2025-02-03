@@ -45,7 +45,7 @@ public class BirthdayScheduler {
 
 
 
-     */
+
 
     @Scheduled(fixedDelayString = "PT1S")
   //  @Scheduled(cron = " 1* * * * *") //cron sekildede vaxti teyin etmek olar burda 5M (deqiqe) secmis oldug;
@@ -57,6 +57,8 @@ public class BirthdayScheduler {
         Thread.sleep(5000L);
 
     }
+
+
 
 
 
@@ -81,4 +83,6 @@ public class BirthdayScheduler {
 
     }
 
+
+     */
 }

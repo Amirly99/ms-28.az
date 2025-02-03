@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres  # Öz imiciniz
+    container_name: my-new_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: amirliragib
+      POSTGRES_DB: postgres
+    networks:
+      - my-network
+    ports:
+      - "5432:5432"
+
+  java-app:
+    image: my-java-app
+    container_name: my-java-container
+    networks:
+      - my-network
+    ports:
+      - "8091:8090"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: amirliragib
+
+networks:
+  my-network:
+    driver: bridge
+

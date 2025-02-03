@@ -13,7 +13,6 @@ public enum ComputerMapper {
                 .computerMark(entity.getComputerMark())
                 .amount(entity.getAmount())
                 .date(entity.getDate())
-
                 .build();
     }
 

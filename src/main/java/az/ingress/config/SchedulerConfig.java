@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import javax.sql.DataSource;
 
 @Configuration//Sade bean yaradilmasi;
-//@EnableScheduling//Scheduler aktiv olunmasi ucun ;
+@EnableScheduling//Scheduler aktiv olunmasi ucun ;
 @EnableSchedulerLock(defaultLockAtMostFor = "PT1S")//MAX iseleme vaxtidi yeni 1 satdan bir tekrar prossesin gedilmesi;
 public class SchedulerConfig {
     @Bean//method oldugu ucun;

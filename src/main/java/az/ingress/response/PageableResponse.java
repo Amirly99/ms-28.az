@@ -1,5 +1,6 @@
 package az.ingress.response;
 
+import az.ingress.entity.lab.CreditsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

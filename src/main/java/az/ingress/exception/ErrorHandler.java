@@ -2,6 +2,7 @@ package az.ingress.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,7 +18,8 @@ public class ErrorHandler {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionResponse handle(Exception ex) {
         log.error("Exception", ex);
-        return new ExceptionResponse(UNEXPECTED_EXCEPTION_CODE, UNEXPECTED_EXCEPTION_MESSAGE);//Bura hard code yazmagin sebbebi odu ki ex ->
+        return new ExceptionResponse(UNEXPECTED_EXCEPTION_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR.value(), UNEXPECTED_EXCEPTION_CODE
+        );//Bura hard code yazmagin sebbebi odu ki ex ->
         //bas verdikde musteri terefden anlasilan ex olsun yoxsa message gondersek exp musteri basa dusmez yene mesel:NotFoundException;
         //Ex paralel handler etmeyin hemde diger ustunluyu odu ki,esas exception handler sehven etsek onun evezine Exception.class onun evezine partlasin;
         //Biz servicde ferqli-ferqli exp qeyd etmisikse o zaman butun exp handler etmeliyik;
@@ -29,6 +31,18 @@ public class ErrorHandler {
     public ExceptionResponse handle(NotFoundException ex) {
 
         log.error("NotFoundException", ex);
-        return new ExceptionResponse(ex.getCode(), ex.getMessage());
+        return new ExceptionResponse(ex.getMessage(), ex.getStatus(), ex.getCode());
+    }
+
+    @ExceptionHandler(CustomFeignException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ExceptionResponse> handle(CustomFeignException exception) {
+        log.error("CustomFeignException", exception);
+        ExceptionResponse response = new ExceptionResponse(
+                exception.getMessage(),
+                exception.getStatus(),
+                exception.getCode()
+        );
+        return ResponseEntity.status(exception.getStatus()).body(response);
     }
 }

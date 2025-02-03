@@ -1,6 +1,7 @@
 package az.ingress.service;
 
 import az.ingress.dto.ComputerDto;
+import az.ingress.entity.ComputerEntity;
 import az.ingress.model.Computer;
 import az.ingress.model.criteria.ComputerCriteria;
 import az.ingress.model.criteria.PageCriteria;
@@ -24,10 +25,10 @@ public interface ComputerService {
 
     ComputerResponse updateCache(Long id);
 
-    List<ComputerDto> getAll();
+   // List<ComputerDto> getAll();
 
     void deleteCache();
 
-    PageableResponse getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria);
+    PageableResponse<ComputerEntity> getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria);
 
 }

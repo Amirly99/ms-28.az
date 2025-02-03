@@ -1,39 +1,51 @@
 package az.ingress.service;
 
+import az.ingress.annotations.HandleException;
+import az.ingress.annotations.LogExecution;
+import az.ingress.annotations.TrackTime;
+import az.ingress.client.ComputerClient;
 import az.ingress.dto.ComputerDto;
 import az.ingress.entity.ComputerEntity;
+import az.ingress.exception.ExceptionConstants;
+import az.ingress.exception.ExceptionResponse;
 import az.ingress.exception.NotFoundException;
+import az.ingress.mapper.PageableMapper;
 import az.ingress.model.Computer;
 import az.ingress.model.criteria.ComputerCriteria;
 import az.ingress.model.criteria.PageCriteria;
-import az.ingress.response.ComputerResponse;
-import az.ingress.model.ComputerStatus;
+import az.ingress.model.enums.ComputerStatus;
 import az.ingress.repository.ComputerRepository;
 import az.ingress.repository.OrderDetailRepository;
+import az.ingress.response.ComputerResponse;
 import az.ingress.response.PageableResponse;
 import az.ingress.specification.ComputerSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 import static az.ingress.exception.ExceptionConstants.COMPUTER_NOT_FOUND_CODE;
 import static az.ingress.exception.ExceptionConstants.COMPUTER_NOT_FOUND_MESSAGE;
-import static az.ingress.mapper.PageableMapper.PAGEABLE_MAPPER;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+
 public class ComputerServiceImpl implements ComputerService {
+    private ComputerClient computerClient;
     private final ComputerRepository computerRepository;
     private final OrderDetailRepository orderDetailRepository;
     private OrderDetailService orderDetailService;
-   private final ComputerCriteria computerCriteria;
+    private final ComputerCriteria computerCriteria;
 
-    //@Transactional
+    // @Transactional
     @Override
     public void create(Computer computer) {
         log.info("ActionLog.create.start computer: {}", computer);
@@ -152,57 +164,93 @@ public class ComputerServiceImpl implements ComputerService {
 
     // @Override
     // @Cacheable("computer") //Cache edirik ;//Proxy DP esasinda isleyir;
+    @LogExecution
+    @HandleException
+    @TrackTime
     public ComputerResponse getById(Long id) {
-        log.info("ActionLog.getById.start:{}", id);
+       // log.info("ActionLog.getById.start:{}", id);
         var comp = fetchOrderIfExist(id);
+       var comp2=computerClient.getComputer(id);
 
-        var comp1 = new ComputerResponse(comp.getComputerMark(), comp.getAmount(), comp.getDate());
-        log.info("ActionLog.getById.end:{}", id);
+        var comp1 = new ComputerResponse(comp.getId(), comp.getComputerMark(), comp.getAmount(), comp.getDate());
+       // log.info("ActionLog.getById.end:{}", id);
         return comp1;
     }
 
     // @CachePut(value = "computer") //Cache vasitesile soruglarimizi update bu sekilde edirik;
     @Override
     public ComputerResponse updateCache(Long id) {
-       return getById(id);}
+        return getById(id);
+    }
 
-    // @CacheEvict(value = "computer",allEntries = true)//Bu sekilde cache silirik ;
-     @Override
+    //@CacheEvict(value = "computer",allEntries = true)//Bu sekilde cache silirik ;
+    @Override
     public void deleteCache() {
 
     }
 
-    @Override
-    public PageableResponse getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria) {
-        var pageRequest= PageRequest.of(pageCriteria.getPage(), pageCriteria.getCount());
-        var specification=new ComputerSpecification(computerCriteria);
-        var computersPage=computerRepository.findAll(specification,pageRequest);
+    @PostConstruct
+    public void test() {
+        ComputerEntity test = computerRepository.findById(1L).get();
+        ComputerEntity test1 = computerRepository.findById(1L).get();
+        test.setAmount(BigDecimal.ONE);
+        computerRepository.save(test);
+        try {
+            test1.setAmount(BigDecimal.TEN);
+            computerRepository.save(test1);
 
-        return PAGEABLE_MAPPER.buildPageableResponse(computersPage.getContent(),
-                computersPage.getNumber(),
+        } catch (Exception ex) {
+
+            log.error("Error: {}", ex);
+        }
+
+
+    }
+
+    @Transactional
+    @Override
+    public PageableResponse<ComputerEntity> getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria) {
+        log.info("PageCriteria received: page = {}, count = {}", pageCriteria.getPage(), pageCriteria.getCount());
+        var pageRequest = PageRequest.of(pageCriteria.getPage(), pageCriteria.getCount());
+        log.info("ComputerCriteria received: {}", computerCriteria);
+        //Sort.by(ComputerEntity.Fields.id).descending() -> sorting;
+        var specification = new ComputerSpecification(computerCriteria);
+        log.info("Executing query with specifications and pageRequest: {}", pageRequest);
+
+        Page<ComputerEntity> computersPage = computerRepository.findAll(specification, pageRequest);
+        // log.info("Retrieved data: Total elements = {}, Current page = {}, Has next page = {}",
+        //  computersPage.getTotalElements(), computersPage.getTotalPages(), computersPage.hasNext());
+
+        return PageableMapper.buildPageableResponse(
+                computersPage.getContent(),
+                computersPage.getTotalPages(),
                 computersPage.getTotalElements(),
-                computersPage.hasNext(),
-                computersPage.getTotalPages());
-    }
-
-    @Override
-    public List<ComputerDto> getAll() {
-        return computerRepository.findAll().stream().map(computerEntity -> {
-            return ComputerDto.builder()
-                    .computerMark(computerEntity.getComputerMark())
-                    .amount(computerEntity.getAmount())
-                    .date(computerEntity.getDate())
-                    .status(computerEntity.getStatus())
-
-
-                    .build();
-
-
-        }).toList();
+                computersPage.hasNext());
 
 
     }
 
+    /*
+        @Override
+        public List<ComputerDto> getAll() {
+            return computerRepository.findAll().stream().map(computerEntity -> {
+                return ComputerDto.builder()
+                        .computerMark(computerEntity.getComputerMark())
+                        .amount(computerEntity.getAmount())
+                        .date(computerEntity.getDate())
+                        .status(computerEntity.getStatus())
+
+
+                        .build();
+
+
+            }).toList();
+
+
+        }
+
+
+     */
     private ComputerEntity fetchOrderIfExist(Long id) {
         return computerRepository.findByIdAndStatusNot(id, ComputerStatus.RUNNING)
 

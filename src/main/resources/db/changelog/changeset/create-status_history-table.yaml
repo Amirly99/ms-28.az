@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-status_history
+      author: Ragib
+      changes:
+        - createTable:
+            tableName: status_history
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: credit_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: create-status_history1
+      author: Ragib
+      changes:
+       - addForeignKeyConstraint:
+            baseTableName: status_history
+            baseColumnNames: credit_id
+            referencedTableName: credits
+            referencedColumnNames: id
+            constraintName: fk_status_history_credits
+

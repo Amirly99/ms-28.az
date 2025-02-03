@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-credits
+      author: Ragib
+      changes:
+        - createTable:
+            tableName: credits
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(16,2)
+              - column:
+                  name: term
+                  type: integer
+              - column:
+                  name: interest
+                  type: numeric(16,2)
+              - column:
+                  name: monthly_payment
+                  type: numeric(16,2)
+              - column:
+                  name: request_amount
+                  type: numeric(16,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: check_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: bigint
+
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp
+              - column:
+                  name: offer_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: create-credits1
+      author: Ragib
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: credits
+            baseColumnNames: customer_id
+            referencedTableName: customers
+            referencedColumnNames: id
+            constraintName: fk_credits_customers
+
+  - changeSet:
+      id: create-credits2
+      author: Ragib
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: credits
+            baseColumnNames: offer_id
+            referencedTableName: offers
+            referencedColumnNames: id
+            constraintName: fk_credits_offers
+
+

@@ -1,0 +1,8 @@
+# PostgreSQL rəsmi imicini əsas alın
+FROM postgres:latest
+
+# PostgreSQL üçün konfiqurasiya fayllarını konteynerə kopyalayın (istəyə bağlı)
+ # COPY ./my_custom_config.conf /etc/postgresql/postgresql.conf
+
+# Konfiqurasiya dəyişiklikləri edirsinizsə, burada `postgres` serverini başladın
+# CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]

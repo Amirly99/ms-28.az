@@ -58,8 +58,11 @@ dependencies {
     //testing
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'net.javacrumbs.shedlock:shedlock-spring:5.3.0'
     implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.3.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.4'
+
 
 }
 

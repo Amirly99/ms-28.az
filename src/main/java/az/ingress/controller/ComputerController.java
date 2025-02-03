@@ -1,6 +1,10 @@
 package az.ingress.controller;
 
+import az.ingress.annotations.HandleException;
+import az.ingress.annotations.LogExecution;
+import az.ingress.annotations.TrackTime;
 import az.ingress.dto.ComputerDto;
+import az.ingress.entity.ComputerEntity;
 import az.ingress.model.Computer;
 import az.ingress.model.criteria.ComputerCriteria;
 import az.ingress.model.criteria.PageCriteria;
@@ -8,6 +12,7 @@ import az.ingress.response.ComputerResponse;
 import az.ingress.response.PageableResponse;
 import az.ingress.service.ComputerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,19 +52,23 @@ public class ComputerController {
         computerService.delete(id);
 
     }
-
+@TrackTime
+@HandleException
+@LogExecution
     @GetMapping(value = "/{id}")
     public ComputerResponse getById(@PathVariable Long id) {
 
         return computerService.getById(id);
     }
-
+/*
     @GetMapping(value = "/findAll")
     public List<ComputerDto> getAll() {
 
         return computerService.getAll();
 
     }
+
+ */
 
     @DeleteMapping(value = "/cache")
     // @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -74,7 +83,7 @@ public class ComputerController {
     }
 
     @GetMapping
-    public PageableResponse getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria) {
+    public PageableResponse<ComputerEntity> getComputer(ComputerCriteria computerCriteria, PageCriteria pageCriteria) {
 
         return computerService.getComputer(computerCriteria, pageCriteria);
     }
